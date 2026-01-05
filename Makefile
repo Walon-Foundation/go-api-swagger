@@ -1,5 +1,6 @@
 .PHONY: swag dev test format migrate-up migrate-down
-	
+
+#This is a demo DATABASE_URL	
 DB_URL=postgres://walon:password@localhost:5432/app_db?sslmode=disable
 MIGRATION_PATH=cmd/db/migrations
 
