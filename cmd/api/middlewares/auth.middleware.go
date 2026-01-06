@@ -1,13 +1,14 @@
 package middlewares
 
 import (
-	// "fmt"
 	"net/http"
 	"strings"
 
-	"github.com/clerk/clerk-sdk-go/v2/jwt"
+	"github.com/Walon-Foundation/go-gin-doc/cmd/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
+
 
 // AuthMiddleware verifies the Clerk session JWT
 func AuthMiddleware() gin.HandlerFunc {
@@ -26,18 +27,14 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		// Verify the session JWT
-		claims, err := jwt.Verify(c.Request.Context(), &jwt.VerifyParams{
-			Token: token,
-		})
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid session"})
+		claims, err := utils.VerifyToken(token)
+		if err != nil || err == jwt.ErrTokenExpired  {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error":"invalid token"})
 			return
 		}
 
 		// Add claims or user ID to context for handlers
-		c.Set("user_id", claims.Subject)
-
-		// fmt.Println(claims.Subject)
+		c.Set("userId", claims.UserdId)
 
 		c.Next()
 	}
