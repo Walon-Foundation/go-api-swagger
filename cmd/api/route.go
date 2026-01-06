@@ -17,16 +17,16 @@ func (app *application) route()http.Handler{
 	
 	v1 := g.Group("/api/v1")
 	{
+		//Auth router
 		v1.POST("/auth/signup", r.RegisterUser)
 		v1.POST("/auth/login", r.LoginUser)
-	}
-	
-	protectedV1 := g.Group("/api/v1")
-	protectedV1.Use(middlewares.AuthMiddleware())
-	{
-		protectedV1.GET("/events", r.GetEvent)
-		protectedV1.POST("/events", r.CreateEvent)
-		protectedV1.GET("/events:id",r.GetOneEvent)
+		
+		//event route
+		v1.GET("/events", middlewares.AuthMiddleware(), r.GetEvent)
+		v1.POST("/events",middlewares.AuthMiddleware(), r.CreateEvent)
+		v1.GET("/events:id", middlewares.AuthMiddleware(), r.GetOneEvent)
+		v1.DELETE("/events:id",middlewares.AuthMiddleware(), r.DeleteEvent)
+		v1.PUT("/events:id", middlewares.AuthMiddleware(),r.UpdateEvent)
 	}
 	
 	g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
