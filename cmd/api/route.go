@@ -26,6 +26,7 @@ func (app *application) route()http.Handler{
 	{
 		protectedV1.GET("/events", r.GetEvent)
 		protectedV1.POST("/events", r.CreateEvent)
+		protectedV1.GET("/events:id",r.GetOneEvent)
 	}
 	
 	g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

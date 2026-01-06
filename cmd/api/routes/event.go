@@ -33,6 +33,7 @@ type CreateEventRequest struct {
 // @Success 200 {object} []EventResponse "All events retrieved"
 // @Success 200 {object} utils.SuccessResponseSchema "No events yet"
 // @Failure 500 {object} utils.ErrorResponseSchema "Internal server error"
+// @Security BearerAuth
 // @Router /events [get]
 func (r *route) GetEvent(c *gin.Context) {
 	var events []EventResponse
@@ -112,4 +113,101 @@ func (r *route) CreateEvent(c *gin.Context) {
 	}
 
 	utils.SuccessResponse(c, http.StatusCreated, "event created", newEventId)
+}
+
+
+
+// GetOneEvent godoc
+// @Summary Get a single event
+// @Description Retrieve details of a specific event by its ID
+// @Tags Event
+// @Produce json
+// @Param id path string true "Event ID"
+// @Success 200 {object} EventResponse "Event details retrieved successfully"
+// @Failure 400 {object} utils.ErrorResponseSchema "Invalid event ID"
+// @Failure 404 {object} utils.ErrorResponseSchema "No event found"
+// @Failure 500 {object} utils.ErrorResponseSchema "Internal server error"
+// @Security BearerAuth
+// @Router /events/{id} [get]
+func (r *route)GetOneEvent(c *gin.Context){
+	var event EventResponse
+	eventId, ok := c.Params.Get("id")
+	if !ok {
+		utils.ErrorResponse(
+			c,
+			http.StatusBadRequest,
+			"invalid event id",
+		)
+		
+		return
+	}
+	ctx := c.Request.Context()
+	row := r.Models.Event.GetOneEventById(ctx,eventId)
+	err := row.Scan(&event.Id, &event.Name, &event.CreatorId, &event.CreatedAt)
+	if err != nil {
+		utils.ErrorResponse(
+			c,
+			http.StatusInternalServerError,
+			"failed to get event",
+		)
+		return
+	}
+	
+	if err == pgx.ErrNoRows {
+		utils.ErrorResponse(
+			c,
+			http.StatusNotFound,
+			"no event found",
+		)
+		return
+	}
+	
+	utils.SuccessResponse(
+		c,
+		http.StatusOK,
+		"Event details",
+		event,
+	)
+}
+
+
+
+// DeleteEvent godoc
+// @Summary Delete an event
+// @Description Delete an existing event by its ID
+// @Tags Event
+// @Produce json
+// @Param id path string true "Event ID"
+// @Success 204 {object} utils.SuccessResponseSchema "Event deleted successfully"
+// @Failure 400 {object} utils.ErrorResponseSchema "Invalid event ID"
+// @Failure 500 {object} utils.ErrorResponseSchema "Failed to delete event"
+// @Security BearerAuth
+// @Router /events/{id} [delete]
+func (r *route)DeleteEvent(c *gin.Context){
+	eventId, ok := c.Params.Get("id")
+	if !ok {
+		utils.ErrorResponse(
+			c,
+			http.StatusBadRequest,
+			"invalid event id",
+		)
+		
+		return
+	}
+	ctx := c.Request.Context()
+	value, err := r.Models.Event.DeleteEvent(ctx,eventId)
+	if err != nil || !value.Delete() {
+		utils.ErrorResponse(
+			c,
+			http.StatusInternalServerError,
+			"failed to delete event",
+		)
+		return
+	}
+	
+	utils.SuccessResponse(
+		c,
+		http.StatusNoContent,
+		"event deleted successfully",
+	)
 }
