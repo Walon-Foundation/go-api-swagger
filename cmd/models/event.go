@@ -30,7 +30,7 @@ func (m *EventModel)CreateEvent(ctx context.Context, args ...string)(pgx.Row){
 }
 
 func (m *EventModel) GetOneEventById(ctx context.Context, id string)(pgx.Row){
-	sql := "SELECT * FROM events WHERE id = $1"
+	sql := "SELECT id,name,creator_id, created_at FROM events WHERE id = $1"
 	
 	return config.Db.QueryRow(ctx, sql, id)
 }
@@ -38,4 +38,9 @@ func (m *EventModel) GetOneEventById(ctx context.Context, id string)(pgx.Row){
 func (m *EventModel)DeleteEvent(ctx context.Context, id string)(pgconn.CommandTag, error){
 	sql := "DELETE FROM events WHERE id = $1"
 	return config.Db.Exec(ctx, sql, id)	
+}
+
+func (m *EventModel) UpdateEvent(ctx context.Context, name,id string)(pgx.Row){
+	sql := "UPDATE events SET name = $1 WHERE id = $2 RETURNING id, name, creator_id, created_at"
+	return config.Db.QueryRow(ctx,sql, name, id)
 }

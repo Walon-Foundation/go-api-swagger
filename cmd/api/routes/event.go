@@ -19,9 +19,10 @@ type EventResponse struct {
 }
 
 // CreateEventRequest represents the payload for creating a new event
-type CreateEventRequest struct {
+type EventRequest struct {
 	Name string `json:"name" binding:"required,min=2" example:"Hackathon"`
 }
+
 
 // ===================== GetEvent =====================
 
@@ -72,7 +73,7 @@ func (r *route) GetEvent(c *gin.Context) {
 // @Tags Event
 // @Accept json
 // @Produce json
-// @Param body body CreateEventRequest true "Event payload"
+// @Param body body EventRequest true "Event payload"
 // @Success 201 {object} utils.SuccessResponseSchema "Event created successfully"
 // @Failure 400 {object} utils.ErrorResponseSchema "Invalid request body"
 // @Failure 401 {object} utils.ErrorResponseSchema "Unauthorized user"
@@ -87,7 +88,7 @@ func (r *route) CreateEvent(c *gin.Context) {
 		return
 	}
 
-	var event CreateEventRequest
+	var event EventRequest
 	if err := c.ShouldBindJSON(&event); err != nil {
 		utils.ErrorResponse(c, http.StatusBadRequest, "invalid request body")
 		return
@@ -209,5 +210,75 @@ func (r *route)DeleteEvent(c *gin.Context){
 		c,
 		http.StatusNoContent,
 		"event deleted successfully",
+	)
+}
+
+
+
+
+// UpdateEvent godoc
+// @Summary Update an event
+// @Description Update the name of an existing event by its ID
+// @Tags Event
+// @Accept json
+// @Produce json
+// @Param id path string true "Event ID"
+// @Param body body EventRequest true "Update payload"
+// @Success 200 {object} EventResponse "Event updated successfully"
+// @Failure 400 {object} utils.ErrorResponseSchema "Invalid event ID or request body"
+// @Failure 404 {object} utils.ErrorResponseSchema "Event not found"
+// @Failure 500 {object} utils.ErrorResponseSchema "Internal server error"
+// @Security BearerAuth
+// @Router /events/{id} [put]
+func (r *route)UpdateEvent(c *gin.Context){
+	var event EventResponse
+	eventId, ok := c.Params.Get("id")
+	if !ok {
+		utils.ErrorResponse(
+			c,
+			http.StatusBadRequest,
+			"invalid event id",
+		)
+		
+		return
+	}
+	
+	var updateRequest EventRequest
+	
+	if err := c.ShouldBindJSON(&updateRequest); err != nil {
+		utils.ErrorResponse(
+			c,
+			http.StatusBadGateway,
+			"invalid request body",
+		)
+		return
+	}
+	
+	ctx := c.Request.Context()
+	row := r.Models.Event.UpdateEvent(ctx, updateRequest.Name, eventId)
+	err :=  row.Scan(&event.Id,&event.Name,&event.CreatorId,&event.CreatedAt); 
+	if err != nil {
+		utils.ErrorResponse(
+			c,
+			http.StatusInternalServerError,
+			"failed to update event",
+		)
+		return 
+	}
+	
+	if err == pgx.ErrNoRows {
+		utils.ErrorResponse(
+			c,
+			http.StatusNotFound,
+			"no event found",
+		)
+		return
+	}
+	
+	utils.SuccessResponse(
+		c,
+		http.StatusOK,
+		"event updated successfully",
+		event,
 	)
 }
