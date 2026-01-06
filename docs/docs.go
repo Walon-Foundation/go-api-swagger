@@ -146,9 +146,130 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/events": {
+            "get": {
+                "description": "Retrieve all events from the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Get all events",
+                "responses": {
+                    "200": {
+                        "description": "No events yet",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponseSchema"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSchema"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new event in the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Create a new event",
+                "parameters": [
+                    {
+                        "description": "Event payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/routes.CreateEventRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Event created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponseSchema"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSchema"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized user",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSchema"
+                        }
+                    },
+                    "409": {
+                        "description": "Event already exists",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSchema"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSchema"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "routes.CreateEventRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "example": "Hackathon"
+                }
+            }
+        },
+        "routes.EventResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2026-01-06T15:00:00Z"
+                },
+                "creator_id": {
+                    "type": "string",
+                    "example": "usr_12345"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "evt_12345"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Hackathon"
+                }
+            }
+        },
         "utils.ErrorResponseSchema": {
             "type": "object",
             "properties": {

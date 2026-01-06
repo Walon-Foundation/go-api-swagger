@@ -1,5 +1,29 @@
 basePath: /api/v1
 definitions:
+  routes.CreateEventRequest:
+    properties:
+      name:
+        example: Hackathon
+        minLength: 2
+        type: string
+    required:
+    - name
+    type: object
+  routes.EventResponse:
+    properties:
+      created_at:
+        example: "2026-01-06T15:00:00Z"
+        type: string
+      creator_id:
+        example: usr_12345
+        type: string
+      id:
+        example: evt_12345
+        type: string
+      name:
+        example: Hackathon
+        type: string
+    type: object
   utils.ErrorResponseSchema:
     properties:
       error:
@@ -113,6 +137,62 @@ paths:
       summary: Register a new user
       tags:
       - Auth
+  /events:
+    get:
+      description: Retrieve all events from the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: No events yet
+          schema:
+            $ref: '#/definitions/utils.SuccessResponseSchema'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponseSchema'
+      summary: Get all events
+      tags:
+      - Event
+    post:
+      consumes:
+      - application/json
+      description: Create a new event in the system
+      parameters:
+      - description: Event payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/routes.CreateEventRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Event created successfully
+          schema:
+            $ref: '#/definitions/utils.SuccessResponseSchema'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/utils.ErrorResponseSchema'
+        "401":
+          description: Unauthorized user
+          schema:
+            $ref: '#/definitions/utils.ErrorResponseSchema'
+        "409":
+          description: Event already exists
+          schema:
+            $ref: '#/definitions/utils.ErrorResponseSchema'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponseSchema'
+      security:
+      - BearerAuth: []
+      summary: Create a new event
+      tags:
+      - Event
 securityDefinitions:
   BearerAuth:
     in: header
