@@ -139,10 +139,21 @@ func (r *route) LoginUser(c *gin.Context){
 		return 
 	}
 	
+	//Todo: create a jwt token and send to the user
+	token, err := utils.CreateToken(tempId)
+	if err != nil {
+		utils.ErrorResponse(
+			c,
+			http.StatusInternalServerError,
+			"failed to created token",
+		)
+		return
+	}
+	
 	utils.SuccessResponse(
 		c,
 		http.StatusOK,
 		"Login successfull",
-		tempId,
+		token,
 	)
 }
