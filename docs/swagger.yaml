@@ -151,6 +151,8 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/utils.ErrorResponseSchema'
+      security:
+      - BearerAuth: []
       summary: Get all events
       tags:
       - Event
@@ -191,6 +193,67 @@ paths:
       security:
       - BearerAuth: []
       summary: Create a new event
+      tags:
+      - Event
+  /events/{id}:
+    delete:
+      description: Delete an existing event by its ID
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Event deleted successfully
+          schema:
+            $ref: '#/definitions/utils.SuccessResponseSchema'
+        "400":
+          description: Invalid event ID
+          schema:
+            $ref: '#/definitions/utils.ErrorResponseSchema'
+        "500":
+          description: Failed to delete event
+          schema:
+            $ref: '#/definitions/utils.ErrorResponseSchema'
+      security:
+      - BearerAuth: []
+      summary: Delete an event
+      tags:
+      - Event
+    get:
+      description: Retrieve details of a specific event by its ID
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Event details retrieved successfully
+          schema:
+            $ref: '#/definitions/routes.EventResponse'
+        "400":
+          description: Invalid event ID
+          schema:
+            $ref: '#/definitions/utils.ErrorResponseSchema'
+        "404":
+          description: No event found
+          schema:
+            $ref: '#/definitions/utils.ErrorResponseSchema'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponseSchema'
+      security:
+      - BearerAuth: []
+      summary: Get a single event
       tags:
       - Event
 securityDefinitions:
