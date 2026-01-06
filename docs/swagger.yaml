@@ -1,0 +1,121 @@
+basePath: /api/v1
+definitions:
+  utils.ErrorResponseSchema:
+    properties:
+      error:
+        example: Invalid request
+        type: string
+      success:
+        example: false
+        type: boolean
+    type: object
+  utils.SuccessResponseSchema:
+    properties:
+      data: {}
+      message:
+        example: User created
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+host: localhost:5000
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is an api server for making events and attending events.
+  license:
+    name: MIT
+    url: https://mit-license.org/
+  termsOfService: http://swagger.io/terms/
+  title: Go Gin Doc
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a user using username and password
+      parameters:
+      - description: Login payload
+        in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            password:
+              type: string
+            username:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login successful
+          schema:
+            $ref: '#/definitions/utils.SuccessResponseSchema'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/utils.ErrorResponseSchema'
+        "401":
+          description: Invalid credentials
+          schema:
+            $ref: '#/definitions/utils.ErrorResponseSchema'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponseSchema'
+      summary: Login user
+      tags:
+      - Auth
+  /auth/signup:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account using name, username, and password
+      parameters:
+      - description: Register payload
+        in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            name:
+              type: string
+            password:
+              type: string
+            username:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created successfully
+          schema:
+            $ref: '#/definitions/utils.SuccessResponseSchema'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/utils.ErrorResponseSchema'
+        "409":
+          description: User already exists
+          schema:
+            $ref: '#/definitions/utils.ErrorResponseSchema'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.ErrorResponseSchema'
+      summary: Register a new user
+      tags:
+      - Auth
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
