@@ -5,6 +5,7 @@ import (
 
 	"github.com/Walon-Foundation/go-gin-doc/cmd/api/config"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type EventModel struct{
@@ -26,4 +27,15 @@ func(m *EventModel)GetEventByNameAndCreatorId(ctx context.Context, name,creatorI
 func (m *EventModel)CreateEvent(ctx context.Context, args ...string)(pgx.Row){
 	sql := "INSERT INTO events (id, name, creator_id) VALUES ($1,$2,$3) RETURNING id"
 	return config.Db.QueryRow(ctx, sql, args)
+}
+
+func (m *EventModel) GetOneEventById(ctx context.Context, id string)(pgx.Row){
+	sql := "SELECT * FROM events WHERE id = $1"
+	
+	return config.Db.QueryRow(ctx, sql, id)
+}
+
+func (m *EventModel)DeleteEvent(ctx context.Context, id string)(pgconn.CommandTag, error){
+	sql := "DELETE FROM events WHERE id = $1"
+	return config.Db.Exec(ctx, sql, id)	
 }
