@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS events(
     id TEXT PRIMARY KEY NOT NULL,
     name TEXT NOT NULL,
-    creator_id TEXT NOT NULL REFERENCES users(id) ONDELETE CASCADE,
+    creator_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP NOT NULL DEFAULT now()
 );

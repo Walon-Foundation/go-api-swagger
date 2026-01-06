@@ -8,9 +8,9 @@ import (
 )
 
 
-func Insert(ctx context.Context, sql string, args ...any) (pgx.Row, error) {
+func Insert(ctx context.Context, sql string, args ...any) (pgx.Row) {
     row := config.Db.QueryRow(ctx, sql, args...)
-    return row, nil
+    return row
 }
 
 
