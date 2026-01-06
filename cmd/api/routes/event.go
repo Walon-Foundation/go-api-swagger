@@ -24,7 +24,6 @@ type EventRequest struct {
 }
 
 
-// ===================== GetEvent =====================
 
 // GetEvent godoc
 // @Summary Get all events
@@ -82,7 +81,7 @@ func (r *route) GetEvent(c *gin.Context) {
 // @Security BearerAuth
 // @Router /events [post]
 func (r *route) CreateEvent(c *gin.Context) {
-	userId, ok := c.Get("user")
+	userId, ok := c.Get("userId")
 	if !ok {
 		utils.ErrorResponse(c, http.StatusUnauthorized, "invalid user")
 		return
@@ -195,8 +194,11 @@ func (r *route)DeleteEvent(c *gin.Context){
 		
 		return
 	}
+	
+	userId,_ := c.Get("userId")
+	
 	ctx := c.Request.Context()
-	value, err := r.Models.Event.DeleteEvent(ctx,eventId)
+	value, err := r.Models.Event.DeleteEvent(ctx,eventId,userId.(string))
 	if err != nil || !value.Delete() {
 		utils.ErrorResponse(
 			c,
@@ -243,6 +245,9 @@ func (r *route)UpdateEvent(c *gin.Context){
 		return
 	}
 	
+	userId,_ := c.Get("userId")
+	
+	
 	var updateRequest EventRequest
 	
 	if err := c.ShouldBindJSON(&updateRequest); err != nil {
@@ -255,7 +260,7 @@ func (r *route)UpdateEvent(c *gin.Context){
 	}
 	
 	ctx := c.Request.Context()
-	row := r.Models.Event.UpdateEvent(ctx, updateRequest.Name, eventId)
+	row := r.Models.Event.UpdateEvent(ctx, updateRequest.Name, eventId, userId.(string))
 	err :=  row.Scan(&event.Id,&event.Name,&event.CreatorId,&event.CreatedAt); 
 	if err != nil {
 		utils.ErrorResponse(
