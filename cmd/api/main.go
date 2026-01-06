@@ -1,3 +1,24 @@
+
+// @title           Go Gin Doc
+// @version         1.0
+// @description     This is an api server for making events and attending events.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  MIT
+// @license.url   https://mit-license.org/
+
+// @host      localhost:5000
+// @BasePath  /api/v1
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+
+
 package main
 
 import (
@@ -9,6 +30,7 @@ import (
 	"github.com/Walon-Foundation/go-gin-doc/cmd/api/config"
 	"github.com/Walon-Foundation/go-gin-doc/cmd/utils"
 	"github.com/joho/godotenv"
+	_"github.com/Walon-Foundation/go-gin-doc/docs"
 )
 
 type application struct{
@@ -35,6 +57,7 @@ func init(){
 	}
 	config.LoadDb()
 }
+
 
 func main(){
 	portValue := utils.GetEnvInt("PORT", 5000)
