@@ -9,16 +9,7 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "http://swagger.io/terms/",
-        "contact": {
-            "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
-        },
-        "license": {
-            "name": "MIT",
-            "url": "https://mit-license.org/"
-        },
+        "contact": {},
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -201,7 +192,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/routes.CreateEventRequest"
+                            "$ref": "#/definitions/routes.EventRequest"
                         }
                     }
                 ],
@@ -290,6 +281,68 @@ const docTemplate = `{
                     }
                 }
             },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update the name of an existing event by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Update an event",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Event ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/routes.EventRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Event updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/routes.EventResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid event ID or request body",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSchema"
+                        }
+                    },
+                    "404": {
+                        "description": "Event not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSchema"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponseSchema"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -337,7 +390,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "routes.CreateEventRequest": {
+        "routes.EventRequest": {
             "type": "object",
             "required": [
                 "name"
