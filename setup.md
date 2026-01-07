@@ -110,6 +110,25 @@ go run ./cmd/api
 
 The server will start at `http://localhost:5000` (or the port specified in `.env`).
 
+### Docker Deployment
+
+You can also run the application using Docker. This is useful for creating a consistent environment.
+
+1.  **Build the Docker Image**:
+    ```bash
+    docker build -t go-gin-doc .
+    ```
+
+2.  **Run the Container**:
+    Ensure your database is accessible from within the container. If you are running PostgreSQL on your host machine, you might need to use `host.docker.internal` instead of `localhost` in your `DB_URL`.
+
+    ```bash
+    # Example running on port 8080
+    docker run -p 8080:8080 --env-file .env -e PORT=8080 go-gin-doc
+    ```
+
+    > **Note**: The Dockerfile exposes port 8080. We pass `-e PORT=8080` to ensure the application listens on the same port that Docker expects.
+
 ## Testing
 
 Run the test suite:

@@ -27,6 +27,7 @@ This project serves as a practical playground for understanding:
 - **Authentication**: JWT (JSON Web Tokens)
 - **Documentation**: [Swagger](https://swagger.io/) (swaggo)
 - **Migrations**: [golang-migrate](https://github.com/golang-migrate/migrate)
+- **Containerization**: [Docker](https://www.docker.com/)
 
 ## 📂 Project Structure
 
@@ -39,7 +40,9 @@ This project serves as a practical playground for understanding:
 │   └── utils        # Utility functions
 ├── docs             # Swagger documentation files
 ├── Makefile         # Build and run commands
-├── docker-compose.yml # Docker composition
+├── Dockerfile       # Docker build configuration
+├── .dockerignore    # Files excluded from Docker context
+├── docker-compose.yml # Docker composition for dependencies
 └── go.mod           # Go module definition
 ```
 
@@ -81,6 +84,15 @@ For detailed setup instructions, please refer to [setup.md](setup.md).
 4.  **Access the API**
     - Server running at: `http://localhost:5000`
     - Swagger Docs: `http://localhost:5000/swagger/index.html`
+
+5.  **Run with Docker (Optional)**
+    ```bash
+    # Build the image
+    docker build -t go-gin-doc .
+
+    # Run the container (ensure DB_URL points to a reachable database)
+    docker run -p 8080:8080 --env-file .env -e PORT=8080 go-gin-doc
+    ```
 
 ## 📄 License
 

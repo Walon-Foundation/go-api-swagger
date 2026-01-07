@@ -24,4 +24,9 @@ migrate-up:
 migrate-down:
 	migrate -path "$(MIGRATION_PATH)" -database "$(DB_URL)" down 1
 	
-	
+docker-build:
+	docker build -t my-api:1.0 .
+
+docker-run:
+	docker run -d --name my-api -p 8080:8080 my-api:1.0
+
